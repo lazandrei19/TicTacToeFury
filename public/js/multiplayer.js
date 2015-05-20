@@ -7,17 +7,15 @@ var sCs = ["0000000000", "0000000000", "0000000000", "0000000000", "0000000000",
 var bC = "000000000";
 var active = 1; //Active Player
 var activepP = -1; //Active Big Cell
-var lastAppearance;
-var lastMove;
-var no = 0;
-
-$(".all").show();
+var socket = io.connect('http://192.168.3.101:8080');
+var thisMove;
+var me;
+var lastMove = null;
 
 var tC = (active == 1)? "red" : "blue";
 
 $(".big-cell-" + tC + " .small-cell-unocupied").click(function (event) {
 
-	no++;
 	var color = (active == 1)? "red" : "blue";
 
 	var tCt = event.target.offsetTop,	//Target Cell Top
@@ -33,94 +31,52 @@ $(".big-cell-" + tC + " .small-cell-unocupied").click(function (event) {
 		pP = Math.floor(pCl / bCSize) + (Math.floor(pCt / bCSize) * 3);		//Parent position
 
 	
-
-	if(activepP == -1 || activepP == pP) {
-		var childData = sCs[pP].split("");
-		if(childData[cP] == 0){
-			childData[cP] = active;
-			var finishedData = childData.join("");
-			sCs[pP] = finishedData;
-			var tmp = detectWin(pP);
-			if(tmp != 0) {
-				var tmp2 = sCs[pP].split("");
-				tmp2[9] = tmp;
-				sCs[pP] = tmp2.join("");
-				var won = (active == 1)? "red" : "blue";
-				$(".over.bCellWon")[pP].className = "over bCellWon " + won;
-				var updater = bC.split("");
-				updater[pP] = active;
-				bC = updater.join("");
-				var wonGame = detectWinGame();
-				if(wonGame != 0) {
-					alert(won + " won the game");
+	if(me == active){
+		if(activepP == -1 || activepP == pP) {
+			var childData = sCs[pP].split("");
+			if(childData[cP] == 0){
+				childData[cP] = active;
+				var finishedData = childData.join("");
+				sCs[pP] = finishedData;
+				var tmp = detectWin(pP);
+				if(tmp != 0) {
+					var tmp2 = sCs[pP].split("");
+					tmp2[9] = tmp;
+					sCs[pP] = tmp2.join("");
+					var won = (active == 1)? "red" : "blue";
+					$(".over.bCellWon")[pP].className = "over bCellWon " + won;
+					var updater = bC.split("");
+					updater[pP] = active;
+					bC = updater.join("");
+					var wonGame = detectWinGame();
+					if(wonGame != 0) {
+						alert(won + " won the game");
+					}
 				}
-			}
-			event.target.className = "small-cell-" + color;
-			activepP = cP;
-			var thisColor = (active == 2)? "red" : "blue";
-			if(sCs[activepP].indexOf(0) == -1){
-				activepP = -1;
-				$(".over").removeClass("inactive");
-				$(".big-cell-" + color +", .big-cell-inactive").removeClass().addClass("big-cell-" + thisColor);
-			} else {
-				$(".main-board>div").removeClass().addClass("big-cell-inactive");
-				$(".over.aon").removeClass("active").addClass("inactive");
-				$(".over.inactive")[cP].className = "over aon active";
-				$(".main-board>div")[cP].className = "big-cell-" + thisColor;
-			}
-			$(".undo.hidden").removeClass("hidden");
-			lastAppearance = new Date().getTime();
-			setTimeout(function () {
-				if((new Date().getTime() - lastAppearance) > 3000) {
-					$(".undo").addClass("hidden");
+				event.target.className = "small-cell-" + color;
+				activepP = cP;
+				var thisColor = (active == 2)? "red" : "blue";
+				if(sCs[activepP].indexOf(0) == -1){
+					activepP = -1;
+					$(".over").removeClass("inactive");
+					$(".big-cell-" + color +", .big-cell-inactive").removeClass().addClass("big-cell-" + thisColor);
+				} else {
+					$(".main-board>div").removeClass().addClass("big-cell-inactive");
+					$(".over.aon").removeClass("active").addClass("inactive");
+					$(".over.inactive")[cP].className = "over aon active";
+					$(".main-board>div")[cP].className = "big-cell-" + thisColor;
 				}
-			}, 3001);
-			lastMove = pP * 10 + cP;
-			active = (active == 2)? 1 : 2;
+				lastMove = pP * 10 + cP;
+				socket.emit('move', (me*100 + pP*10 + cP));
+				active = (active == 2)? 1 : 2;
+			}
 		}
 	}
 });
 
-$(".undo .button").click(function () {
-	$(".undo").addClass("hidden");
-	no--;
-	var lastcP = lastMove % 10;
-	var lastpP = Math.floor(lastMove / 10);
-	lastMove = null;
-	activepP = lastpP;
-	var pack = sCs[lastpP].split("");
-	pack[lastcP] = 0;
-	sCs[lastpP] = pack.join("");
-	if(detectWin(lastpP) == 0) {
-		var tmp = sCs[lastpP].split("");
-		tmp[9] = 0;
-		sCs[lastpP] = tmp.join("");
-		var updater = bC.split("");
-		updater[lastpP] = 0;
-		bC = updater.join("");
-		$(".over.bCellWon")[lastpP].className = "over bCellWon";
-	}
-	if(no != 0){
-		$(".main-board>div").removeClass().addClass("big-cell-inactive");
-		$(".over.aon").removeClass("active").addClass("inactive");
-		$(".over.inactive")[lastpP].className = "over aon active";
-		var thisColor = (active == 2)? "red" : "blue";
-		$(".main-board>div")[lastpP].className = "big-cell-" + thisColor;
-		$(".big-cell-"+thisColor+" *")[lastcP].className = "small-cell-unocupied";
-	} else {
-		$(".main-board>div").removeClass().addClass("big-cell-inactive");
-		$(".over.aon").removeClass("active").addClass("inactive");
-		$(".over.inactive").removeClass().addClass("over").addClass("aon").addClass("active");
-		var thisColor = (active == 2)? "red" : "blue";
-		$(".main-board>div").removeClass().addClass("big-cell-" + thisColor);
-		$(".big-cell-"+thisColor+" div").removeClass().addClass("small-cell-unocupied");
-		activepP = -1;
-	}
-	active = (active == 2)? 1 : 2;
-});
-
 function detectWin (id) {
 	var data = sCs[id].split("");
+	console.log(data);
 	if(data[9] == 0) {
 		if((data[0] == data[1]) && (data[1] == data[2]) && (data[0] != 0)) {
 			return data[0];
@@ -176,3 +132,57 @@ function detectWinGame () {
 		return 0;
 	}
 }
+
+socket.on('isPlaying', function (data) {
+	$(".loader").hide();
+	$(".all").show();
+	console.log(data);
+	me = data.ag;
+	if(data.ag == 2) {
+		socket.emit('last');
+	}
+	socket.emit('against', data.id);
+});
+
+socket.on('opponent', function (move) {
+	socket.emit('opmove', move);
+	var cP = move % 10;
+	var pP = Math.floor((move / 10) % 10);
+	var who = Math.floor((move / 100) % 10);
+	var childData = sCs[pP].split("");
+	var color = (active == 1)? "red" : "blue";
+	if(childData[cP] == 0){
+		childData[cP] = active;
+		var finishedData = childData.join("");
+		sCs[pP] = finishedData;
+		var tmp = detectWin(pP);
+		if(tmp != 0) {
+			var tmp2 = sCs[pP].split("");
+			tmp2[9] = tmp;
+			sCs[pP] = tmp2.join("");
+			var won = (active == 1)? "red" : "blue";
+			$(".over.bCellWon")[pP].className = "over bCellWon " + won;
+			var updater = bC.split("");
+			updater[pP] = active;
+			bC = updater.join("");
+			var wonGame = detectWinGame();
+			if(wonGame != 0) {
+				alert(won + " won the game");
+			}
+		}
+		event.target.className = "small-cell-" + color;
+		activepP = cP;
+		var thisColor = (active == 2)? "red" : "blue";
+		if(sCs[activepP].indexOf(0) == -1){
+			activepP = -1;
+			$(".over").removeClass("inactive");
+			$(".big-cell-" + color +", .big-cell-inactive").removeClass().addClass("big-cell-" + thisColor);
+		} else {
+			$(".main-board>div").removeClass().addClass("big-cell-inactive");
+			$(".over.aon").removeClass("active").addClass("inactive");
+			$(".over.inactive")[cP].className = "over aon active";
+			$(".main-board>div")[cP].className = "big-cell-" + thisColor;
+		}
+	}
+	active = (active == 2)? 1 : 2;
+});

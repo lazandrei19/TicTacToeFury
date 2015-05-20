@@ -1,0 +1,23 @@
+$bgC: #FFF7F4;
+$accentC: #888784;
+
+.bt {
+	color: $accentC;
+	margin: 20px 10px 0;
+	display: inline-block;
+	font-size: 35px;
+	font-weight: 400;
+	text-align: center;
+	border: 2px $accentC solid;
+	border-radius: 10px;
+	@include size(250px 100px);
+	vertical-align: middle;
+	line-height: 100px;
+	@include transition(all 0.15s ease-in);
+
+	&:hover {
+		background: $accentC;
+		color: $bgC;
+		cursor: pointer;
+	}
+}
