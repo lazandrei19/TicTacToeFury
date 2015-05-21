@@ -2,7 +2,6 @@
 *.sublime-*
 node_modules
 bower_components
-Vagrantfile
 npm-debug*
 vendor
 .DS_STORE
