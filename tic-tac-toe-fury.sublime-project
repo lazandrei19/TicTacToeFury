@@ -1,0 +1,64 @@
+{
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"*"
+			],
+			"name": "Markup",
+			"path": "public"
+		},
+		{
+			"folder_exclude_patterns":
+			[
+				".*"
+			],
+			"name": "Scripts",
+			"path": "assets/scripts"
+		},
+		{
+			"name": "Styles",
+			"path": "assets/styles"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				".*",
+				"--*",
+				"composer.lock",
+				"*.log",
+				"*.box"
+			],
+			"folder_exclude_patterns":
+			[
+				"*"
+			],
+			"name": "Misc",
+			"path": "."
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.php"
+			
+			],
+			"name": "public",
+			"path": "."
+		},
+		{	"file_exclude_patterns":
+			[
+				"npm-debug.log*"
+			
+			],
+			"name": "Node",
+			"path": "public/node"
+		},
+		{	"name": "[DEBUG]CSS",
+			"path": "public/css"
+		},
+		{	"name": "[DEBUG]JS",
+			"path": "public/js"
+		},
+	]
+}
