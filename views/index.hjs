@@ -9,8 +9,8 @@
 <body id="index">
 	<div class="center">
 		<p>Choose your entrance:</p>
-		<div class="bt" onclick="location.href = 'singleplayer.html';">Singleplayer</div>
-		<div class="bt" onclick="location.href = 'multiplayer.html';">Multiplayer</div>
+		<div class="bt" onclick="location.href = 'singleplayer';">Singleplayer</div>
+		<div class="bt" onclick="location.href = 'multiplayer';">Multiplayer</div>
 	</div>
 </body>
 </html>
