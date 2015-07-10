@@ -1,5 +1,5 @@
 *.box
-*.sublime-*
+*.sublime-workspace
 node_modules
 bower_components
 npm-debug*
@@ -7,3 +7,5 @@ vendor
 .DS_STORE
 *.codekit
 .sass-cache
+.vagrant
+composer.lock
